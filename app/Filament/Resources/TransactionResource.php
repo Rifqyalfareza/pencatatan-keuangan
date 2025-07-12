@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransactionResource\Pages;
 use App\Filament\Resources\TransactionResource\RelationManagers;
+use Filament\Forms\Components\DatePicker;
 
 class TransactionResource extends Resource
 {
@@ -54,6 +55,9 @@ class TransactionResource extends Resource
                     ])
                     ->required()
                     ->columnSpan(2),
+                DatePicker::make('date')
+                    ->required()
+                    ->columnSpan(2),
             ]);
     }
 
@@ -65,19 +69,21 @@ class TransactionResource extends Resource
                     ->sortable()
                     ->label('#')
                     ->rowIndex(),
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('date')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('categories.name')
+                    ->description(fn($record) => $record->name)
+                    ->label('Name')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('amout')
                     ->money('IDR', true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('categories.name')
-                    ->label('Category')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('type')
-                    ->formatStateUsing(fn () => '')
-                    ->numeric()
+
+                Tables\Columns\IconColumn::make('type')
                     ->sortable()
+                    ->label('Type Transaction')
                     ->icon(fn($record) => $record->type === 'expense' ? 'heroicon-o-arrow-down' : 'heroicon-o-arrow-up')
                     ->color(fn($record) => $record->type === 'expense' ? 'danger' : 'success')
                     ->tooltip(fn($record) => $record->type === 'expense' ? 'Expense' : 'Income'),
@@ -90,9 +96,7 @@ class TransactionResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

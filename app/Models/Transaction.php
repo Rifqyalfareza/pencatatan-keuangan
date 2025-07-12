@@ -13,6 +13,7 @@ class Transaction extends Model
         'amout',
         'categories_id',
         'type',
+        'date',
     ];
 
     public function categories(){
